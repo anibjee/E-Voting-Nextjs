@@ -1,6 +1,12 @@
 # E-Voting App - Next.js
 
-A secure e-voting application built with Next.js 14, TypeScript, MongoDB, and Tailwind CSS.
+🗳️ A secure e-voting application built with Next.js 15, TypeScript, MongoDB Atlas, and Tailwind CSS.
+
+## 🚀 Live Demo
+
+**🔗 [View Live Application](https://e-voting-nextjs-fdxn.vercel.app/)**
+
+*Deployed on Vercel with MongoDB Atlas*
 
 ## Features
 
@@ -21,11 +27,13 @@ A secure e-voting application built with Next.js 14, TypeScript, MongoDB, and Ta
 
 ## Technology Stack
 
-- **Frontend**: Next.js 14 with App Router, TypeScript, Tailwind CSS
+- **Frontend**: Next.js 15 with App Router, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes
-- **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT (JSON Web Tokens)
+- **Database**: MongoDB Atlas (Cloud) with Mongoose ODM
+- **Authentication**: JWT (JSON Web Tokens) with NextAuth
 - **Password Security**: bcryptjs for password hashing
+- **Deployment**: Vercel (Production)
+- **Styling**: Tailwind CSS with responsive design
 
 ## Prerequisites
 
@@ -105,6 +113,25 @@ A secure e-voting application built with Next.js 14, TypeScript, MongoDB, and Ta
 - `GET /api/candidate/vote/[id]` - Vote for candidate (voters only)
 - `GET /api/candidate/vote/count` - Get vote counts
 
+## Deployment
+
+### Production Environment
+The application is deployed on Vercel with the following environment variables:
+
+```env
+MONGODB_URL=mongodb+srv://username:password@cluster.mongodb.net/voting
+JWT_SECRET=your-production-jwt-secret
+NEXTAUTH_SECRET=your-production-nextauth-secret
+NEXTAUTH_URL=https://your-app.vercel.app
+```
+
+### Deploy Your Own
+1. Fork this repository
+2. Connect your GitHub repo to Vercel
+3. Set up MongoDB Atlas cluster
+4. Configure environment variables in Vercel dashboard
+5. Deploy!
+
 ## Security Features
 
 - **Password Hashing**: All passwords are hashed using bcryptjs
@@ -113,3 +140,4 @@ A secure e-voting application built with Next.js 14, TypeScript, MongoDB, and Ta
 - **Aadhaar Validation**: 12-digit Aadhaar number validation
 - **Duplicate Prevention**: Users can only vote once
 - **Admin Restrictions**: Only one admin can exist in the system
+- **Environment Security**: Sensitive data protected via environment variables
