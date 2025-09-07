@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Voting App - Next.js
 
-## Getting Started
+A secure e-voting application built with Next.js 14, TypeScript, MongoDB, and Tailwind CSS.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### User Authentication
+- **Signup**: Users can register as voters or admins with Aadhaar number validation
+- **Login**: Secure JWT-based authentication
+- **Role-based Access**: Different dashboards for voters and admins
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Voter Features
+- **Profile Management**: View profile information and update password
+- **Voting**: Vote for candidates (one vote per user)
+- **Vote Status**: Track whether you've already voted
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Admin Features
+- **Candidate Management**: Add, update, and delete candidates
+- **Vote Monitoring**: View real-time vote counts for all candidates
+- **Admin Controls**: Full CRUD operations on candidate data
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technology Stack
 
-## Learn More
+- **Frontend**: Next.js 14 with App Router, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT (JSON Web Tokens)
+- **Password Security**: bcryptjs for password hashing
 
-To learn more about Next.js, take a look at the following resources:
+## Prerequisites
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js 18+ 
+- MongoDB (local or cloud instance)
+- npm or yarn package manager
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Installation
 
-## Deploy on Vercel
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Environment Configuration**
+   Ensure `.env.local` file exists with:
+   ```env
+   MONGODB_URL_LOCAL=mongodb://localhost:27017/voting
+   JWT_SECRET=12345
+   NEXTAUTH_SECRET=voting-app-secret-key
+   NEXTAUTH_URL=http://localhost:3000
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Start MongoDB**
+   Make sure your MongoDB server is running locally or update the connection string for cloud MongoDB.
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Usage
+
+### Getting Started
+
+1. **Create an Admin Account**
+   - Go to signup page
+   - Fill in all required fields
+   - Select "Admin" as role
+   - Complete registration
+
+2. **Add Candidates**
+   - Login as admin
+   - Use the admin dashboard to add candidates
+   - Fill in candidate name, party, and age
+
+3. **Create Voter Accounts**
+   - Users can signup as voters
+   - Each Aadhaar number can only be used once
+
+4. **Voting Process**
+   - Voters login to their dashboard
+   - View available candidates
+   - Cast one vote per account
+   - Vote status is tracked and prevents multiple voting
+
+5. **View Results**
+   - Admin can view real-time vote counts
+   - Results are sorted by vote count (descending)
+
+## API Routes
+
+### User Routes
+- `POST /api/user/signup` - User registration
+- `POST /api/user/login` - User authentication
+- `GET /api/user/profile` - Get user profile (protected)
+- `PUT /api/user/profile/password` - Update password (protected)
+
+### Candidate Routes
+- `GET /api/candidate` - Get all candidates
+- `POST /api/candidate` - Add candidate (admin only)
+- `PUT /api/candidate/[id]` - Update candidate (admin only)
+- `DELETE /api/candidate/[id]` - Delete candidate (admin only)
+- `GET /api/candidate/vote/[id]` - Vote for candidate (voters only)
+- `GET /api/candidate/vote/count` - Get vote counts
+
+## Security Features
+
+- **Password Hashing**: All passwords are hashed using bcryptjs
+- **JWT Authentication**: Secure token-based authentication
+- **Role-based Access Control**: Admin and voter roles with different permissions
+- **Aadhaar Validation**: 12-digit Aadhaar number validation
+- **Duplicate Prevention**: Users can only vote once
+- **Admin Restrictions**: Only one admin can exist in the system

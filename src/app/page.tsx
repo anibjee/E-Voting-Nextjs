@@ -1,103 +1,167 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import axios from 'axios';
+import { useAuth } from '@/context/AuthContext';
+
+export default function LoginPage() {
+  const [aadharCardNumber, setAadharCardNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+  const { login } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      console.log('🔄 Starting login process...');
+      console.log('📤 Sending login request with:', { 
+        aadharCardNumber: parseInt(aadharCardNumber), 
+        password: '***' 
+      });
+      
+      const response = await axios.post('/api/user/login', {
+        aadharCardNumber: parseInt(aadharCardNumber),
+        password,
+      });
+
+      console.log('✅ Login API response:', response.data);
+      const { token, role } = response.data;
+      
+      console.log('🔐 Token received:', token ? 'Yes' : 'No');
+      console.log('👤 Role received:', role);
+      
+      // Use the login method from AuthContext
+      console.log('🔗 Calling AuthContext login...');
+      login(token, role);
+
+      console.log('🧭 Preparing redirect for role:', role);
+      
+      // Determine redirect URL
+      const redirectUrl = role === 'admin' ? '/admin-dashboard' : '/voter-dashboard';
+      console.log('🎯 Target URL:', redirectUrl);
+      console.log('🕰️ Current timestamp:', new Date().toISOString());
+      
+      // Multiple redirect methods for reliability
+      setTimeout(() => {
+        console.log('🚀 Attempting redirect...');
+        
+        try {
+          // Method 1: Next.js router (preferred)
+          console.log('📍 Trying router.push...');
+          router.push(redirectUrl);
+          
+          // Method 2: Fallback after 500ms if router.push fails
+          setTimeout(() => {
+            if (window.location.pathname === '/') {
+              console.log('⚠️ Router.push failed, trying router.replace...');
+              router.replace(redirectUrl);
+              
+              // Method 3: Final fallback after another 500ms
+              setTimeout(() => {
+                if (window.location.pathname === '/') {
+                  console.log('🔄 Router methods failed, using window.location...');
+                  window.location.href = redirectUrl;
+                }
+              }, 500);
+            }
+          }, 500);
+          
+        } catch (error) {
+          console.error('❌ Router error:', error);
+          console.log('🔄 Using window.location as fallback...');
+          window.location.href = redirectUrl;
+        }
+      }, 100);
+      
+    } catch (error: unknown) {
+      console.error('❌ Login error:', error);
+      const errText = (error as any).response?.data?.error || 'Login failed.';
+      setError(errText);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Login
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            E-Voting App
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="aadhaar" className="block text-sm font-medium text-gray-700">
+              Aadhaar Number
+            </label>
+            <input
+              id="aadhaar"
+              name="aadhaar"
+              type="text"
+              required
+              value={aadharCardNumber}
+              onChange={(e) => setAadharCardNumber(e.target.value)}
+              className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              placeholder="Enter your 12-digit Aadhaar number"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          {error && (
+            <div className="text-red-600 text-sm text-center">{error}</div>
+          )}
+
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Don&apos;t have an account?{' '}
+              <Link
+                href="/signup"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Sign up here
+              </Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
