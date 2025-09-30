@@ -52,8 +52,8 @@
    Ensure `.env.local` file exists with:
    ```env
    MONGODB_URL_LOCAL=mongodb://localhost:27017/voting
-   JWT_SECRET=12345
-   NEXTAUTH_SECRET=voting-app-secret-key
+   JWT_SECRET=<YOUR SECRET KEY>
+   NEXTAUTH_SECRET=<YOUR SECRET KEY>
    NEXTAUTH_URL=http://localhost:3000
    ```
 
